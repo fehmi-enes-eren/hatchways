@@ -1,0 +1,36 @@
+ul {
+    list-style-type: none;
+}
+
+img {
+    border: 1px black solid;
+    width: 110px;
+    border-radius: 50%;
+    margin-top: 3rem;
+}
+
+.list-item{
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    border-bottom: 1px solid black;
+    padding: 1rem;
+}
+.info-box {
+    text-align: left;
+    margin-left: 2rem;
+}
+
+.info-items {
+    margin-left: 2rem;
+}
+.name-input {
+    margin-top: 2rem;
+    width: 100%;
+    border: none;
+    padding: 0.5rem 2rem;
+    font-size: 25px;
+    outline: none;
+}
+hr {
+    margin: 0 2rem;
+}
