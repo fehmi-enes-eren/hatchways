@@ -36,9 +36,41 @@ hr {
 }
 .plus-button{
     border: none;
-    /* background-color: white; */
+    background-color: white;
     cursor: pointer;
     width: 50px;
     height: 50px;
     padding: 0;
+}
+
+.tag {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid black;
+    padding-bottom: 0.5rem;
+    font-size: 16px;
+}
+
+.tags-list {
+    padding-left:0px;
+    margin-bottom:1rem;
+    width: 350px;
+}
+
+.tag-item {
+    background-color: rgb(212, 206, 206);
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: 0.5rem;
+}
+
+.tag-search-input {
+    margin-top: 2rem;
+    width: 100%;
+    border: none;
+    padding: 0.5rem 2rem;
+    font-size: 25px;
+    outline: none;
 }

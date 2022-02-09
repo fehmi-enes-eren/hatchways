@@ -7,14 +7,21 @@ import "./home.css"
 export default function Home() {
     const [state, setState] = useState([]);
     const [searchByName, setSearchByName] = useState([]);
-    //const [searchByNameInput, setSearchByNameInput] = useState("");
+    const [tag, setTag] = useState("");
 
 
     useEffect(()=>{
         axios.get("https://api.hatchways.io/assessment/students")
         .then(res=>{
-            setState(res.data.students)
-            setSearchByName(res.data.students)
+            //setState(res.data.students);
+            //setSearchByName(res.data.students);
+
+            const newArr = res.data.students.map(student => {  
+                return {...student, tags: []};
+            });
+            setSearchByName(newArr);
+            setState(newArr);
+
         }).catch(err=>console.log(err))
 
     }, [])
@@ -95,9 +102,34 @@ export default function Home() {
         }
     }
 
+    const HandleTag = (e) => {
+        setTag(e.target.value)
+    }
+
+    const HandleKeyboardEvent = (e) => {
+        if(e.key === "Enter"){
+            const newArr = searchByName.map(student => {
+                if (student.id === e.target.id) {
+                return {...student, tags: [...student.tags, e.target.value]};
+                }
+            
+                return student;
+            });
+            setSearchByName(newArr)
+            setTag("")
+        }
+        
+    }
+
+    const HandleTagSearch = (e) => {
+        
+    }
+
     console.log(searchByName)
   return <div>
       <input onChange={HandleNameSearch} className='name-input' placeholder='Search by name'/>
+      <hr/>
+      <input onChange={HandleTagSearch} className='tag-search-input' placeholder='Search by tag'/>
       <hr/>
       <ul>
           {searchByName.map(student=>{
@@ -115,6 +147,21 @@ export default function Home() {
                             <span>Average: {
                                 student.grades.reduce((accumulator, curr) => Number(accumulator) + Number(curr))/student.grades.length
                             }%</span>
+                            <ul style={{marginTop:"1rem"}}>
+                                {student.clicked && student.grades.map((grade,index)=>{
+                                    return <li key={index}>
+                                        Test&nbsp;{index+1}:&nbsp; {grade}%
+                                    </li>
+                                })}
+                            </ul>
+                            <ul className='tags-list'>
+                                {student.tags.length !== 0 && student.tags.map((tag,index)=>{
+                                    return <li key={index} className="tag-item">
+                                        {tag}
+                                    </li>
+                                })}
+                            </ul>
+                            <input onChange={HandleTag} onKeyPress={HandleKeyboardEvent} value={tag} type="text" placeholder='Add a tag' className='tag' id={student.id}/>
                             
                         </div>
                         
