@@ -49,37 +49,49 @@ export default function Home() {
 
     const ShowGrades = (e) => {
         if(e.target.id !== ""){
-            
-            const result = searchByName.filter(student=>{
-                return student.id === e.target.id ? student["clicked"] = true : student["clicked"] = false
-            })
-            
-            const removeDuplicate = searchByName.filter(student=>{
-                return student.id !== result[0].id
-            })
-            removeDuplicate.unshift(result[0])
-            setSearchByName(removeDuplicate)
+
+            const newArr = searchByName.map(student => {
+                if (student.id === e.target.id) {
+                  return {...student, clicked: true};
+                }
+              
+                return student;
+            });
+            setSearchByName(newArr)
         } else {
             
-            searchByName[e.target.parentElement.id].clicked = true;
+            const newArr = searchByName.map(student => {
+                if (student.id === e.target.parentElement.id) {
+                  return {...student, clicked: true};
+                }
+              
+                return student;
+            });
+            setSearchByName(newArr)
         }
         
     }
 
     const CloseGrades = (e) => {
         if(e.target.id !== ""){
-            
-            const result = searchByName.filter(student=>{
-                return student.id === e.target.id ? student["clicked"] = false : ""
-            })
-            const removeDuplicate = searchByName.filter(student=>{
-                return student.id !== result[0].id
-            })
-            removeDuplicate.unshift(result[0])
-            setSearchByName(removeDuplicate)
+            const newArr = searchByName.map(student => {
+                if (student.id === e.target.id) {
+                  return {...student, clicked: false};
+                }
+              
+                return student;
+            });
+            setSearchByName(newArr)
         } else {
             
-            searchByName[e.target.parentElement.id].clicked = true;
+            const newArr = searchByName.map(student => {
+                if (student.id === e.target.parentElement.id) {
+                  return {...student, clicked: false};
+                }
+              
+                return student;
+            });
+            setSearchByName(newArr)
         }
     }
 
