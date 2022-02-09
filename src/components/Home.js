@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import {BsPlusLg} from "react-icons/bs"
+import {BiMinus} from "react-icons/bi"
 import axios from "axios"
 import "./home.css"
 
@@ -11,7 +13,6 @@ export default function Home() {
     useEffect(()=>{
         axios.get("https://api.hatchways.io/assessment/students")
         .then(res=>{
-            console.log(res.data)
             setState(res.data.students)
             setSearchByName(res.data.students)
         }).catch(err=>console.log(err))
@@ -38,7 +39,7 @@ export default function Home() {
             }
             
         }
-        console.log(array)
+        
         if(e.target.value === ""){
             setSearchByName(state)
         } else {
@@ -46,7 +47,43 @@ export default function Home() {
         }
     }
 
+    const ShowGrades = (e) => {
+        if(e.target.id !== ""){
+            
+            const result = searchByName.filter(student=>{
+                return student.id === e.target.id ? student["clicked"] = true : student["clicked"] = false
+            })
+            
+            const removeDuplicate = searchByName.filter(student=>{
+                return student.id !== result[0].id
+            })
+            removeDuplicate.unshift(result[0])
+            setSearchByName(removeDuplicate)
+        } else {
+            
+            searchByName[e.target.parentElement.id].clicked = true;
+        }
+        
+    }
 
+    const CloseGrades = (e) => {
+        if(e.target.id !== ""){
+            
+            const result = searchByName.filter(student=>{
+                return student.id === e.target.id ? student["clicked"] = false : ""
+            })
+            const removeDuplicate = searchByName.filter(student=>{
+                return student.id !== result[0].id
+            })
+            removeDuplicate.unshift(result[0])
+            setSearchByName(removeDuplicate)
+        } else {
+            
+            searchByName[e.target.parentElement.id].clicked = true;
+        }
+    }
+
+    console.log(searchByName)
   return <div>
       <input onChange={HandleNameSearch} className='name-input' placeholder='Search by name'/>
       <hr/>
@@ -66,8 +103,19 @@ export default function Home() {
                             <span>Average: {
                                 student.grades.reduce((accumulator, curr) => Number(accumulator) + Number(curr))/student.grades.length
                             }%</span>
+                            
                         </div>
+                        
                     </div>
+                    {student.clicked ? <button id={student.id} onClick={CloseGrades} className="plus-button">
+                        <BiMinus id={student.id} style={{fontSize:"50px"}}/>
+                    </button>
+                    : 
+                    <button id={student.id} onClick={ShowGrades} className="plus-button">
+                        <BsPlusLg id={student.id} style={{fontSize:"50px"}}/>
+                    </button>}
+                    
+                    
                     
                 </li> 
             })}
