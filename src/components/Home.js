@@ -6,133 +6,164 @@ import "./home.css"
 
 export default function Home() {
     const [state, setState] = useState([]);
-    const [searchByName, setSearchByName] = useState([]);
-    const [tag, setTag] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchItems, setSearchItems] = useState({name:"",tag:""});
+    const [tag, setTag] = useState({tag:"",id:""});
 
 
     useEffect(()=>{
         axios.get("https://api.hatchways.io/assessment/students")
         .then(res=>{
             //setState(res.data.students);
-            //setSearchByName(res.data.students);
+            //setSearchResults(res.data.students);
 
             const newArr = res.data.students.map(student => {  
                 return {...student, tags: []};
             });
-            setSearchByName(newArr);
+            setSearchResults(newArr);
             setState(newArr);
 
         }).catch(err=>console.log(err))
 
     }, [])
 
-    const HandleNameSearch = (e) => {
+    const HandleSearch = (e) => {
         let array = [];
         let search;
         let studentFirstName;
         let studentLastName;
-        for (let i =0; i<state.length; i++){
-            search = e.target.value.toUpperCase();
-            studentFirstName = state[i].firstName
-            studentLastName = state[i].lastName
-            if(studentFirstName.toUpperCase().indexOf(search)===0){
-                console.log("new")
-                console.log(studentFirstName)
-                console.log(studentLastName)
-                array.push(state[i])
-            }
-            if(studentLastName.toUpperCase().indexOf(search)===0){
-                array.push(state[i])
-            }
-            
-        }
-        
-        if(e.target.value === ""){
-            setSearchByName(state)
-        } else {
-            setSearchByName(array)
-        }
-    }
+        let searchTag;
 
+
+        if(e.target.id === "name-search"){
+            setSearchItems({name:e.target.value, tag:""})
+            for (let i =0; i<state.length; i++){
+                search = e.target.value.toUpperCase();
+                studentFirstName = state[i].firstName;
+                studentLastName = state[i].lastName;
+
+                if(studentFirstName.toUpperCase().indexOf(search)===0){
+                    array.push(state[i])
+                    
+                }
+                if(studentLastName.toUpperCase().indexOf(search)===0){
+                    array.push(state[i]);
+                    
+                }
+            }
+            if(e.target.value === ""){
+                setSearchResults(state)
+            }else {
+                setSearchResults(array)
+            }
+
+        } else {
+            setSearchItems({tag:e.target.value, name:""})
+            for (let i =0; i<state.length; i++){
+                search = e.target.value.toUpperCase();
+                searchTag = state[i].tags;
+                for(let j =0; j<searchTag.length; j++){
+
+                    if(searchTag[j].toUpperCase().indexOf(search)===0){
+                        array.push(state[i]);
+                        // setSearchResults([...searchResults, state[i]])
+                    }
+                }    
+            }
+
+
+            if(e.target.value === ""){
+                setSearchResults(state)
+            }else {
+                const ids = array.map(o => o.id)
+                const filtered = array.filter(({id}, index) => !ids.includes(id, index + 1))
+                setSearchResults(filtered)
+            }
+        }
+  
+    }
+    
+    console.log(searchResults)
     const ShowGrades = (e) => {
         if(e.target.id !== ""){
 
-            const newArr = searchByName.map(student => {
+            const newArr = searchResults.map(student => {
                 if (student.id === e.target.id) {
                   return {...student, clicked: true};
                 }
               
                 return student;
             });
-            setSearchByName(newArr)
+            setSearchResults(newArr)
         } else {
             
-            const newArr = searchByName.map(student => {
+            const newArr = searchResults.map(student => {
                 if (student.id === e.target.parentElement.id) {
                   return {...student, clicked: true};
                 }
               
                 return student;
             });
-            setSearchByName(newArr)
+            setSearchResults(newArr)
         }
         
     }
 
     const CloseGrades = (e) => {
         if(e.target.id !== ""){
-            const newArr = searchByName.map(student => {
+            const newArr = searchResults.map(student => {
                 if (student.id === e.target.id) {
                   return {...student, clicked: false};
                 }
               
                 return student;
             });
-            setSearchByName(newArr)
+            setSearchResults(newArr)
         } else {
             
-            const newArr = searchByName.map(student => {
+            const newArr = searchResults.map(student => {
                 if (student.id === e.target.parentElement.id) {
                   return {...student, clicked: false};
                 }
               
                 return student;
             });
-            setSearchByName(newArr)
+            setSearchResults(newArr)
         }
     }
 
     const HandleTag = (e) => {
-        setTag(e.target.value)
+        setTag({
+            tag: e.target.value,
+            id:e.target.id
+        })
     }
 
     const HandleKeyboardEvent = (e) => {
-        if(e.key === "Enter"){
-            const newArr = searchByName.map(student => {
+        if(e.key === "Enter" && tag !== ""){
+            const newArr = searchResults.map(student => {
                 if (student.id === e.target.id) {
                 return {...student, tags: [...student.tags, e.target.value]};
                 }
             
                 return student;
             });
-            setSearchByName(newArr)
+            setSearchResults(newArr)
+            setState(newArr)
             setTag("")
         }
         
     }
 
-    const HandleTagSearch = (e) => {
-        
-    }
 
-    console.log(searchByName)
+    //console.log(searchResults);
   return <div>
-      <input onChange={HandleNameSearch} className='name-input' placeholder='Search by name'/>
+      <input onChange={HandleSearch} value={searchItems.name} className='name-input' name="name" id="name-search" placeholder='Search by name'/>
       <hr/>
-      <input onChange={HandleTagSearch} className='tag-search-input' placeholder='Search by tag'/>
+      <input onChange={HandleSearch} value={searchItems.tag} className='tag-search-input' name="tag" id='tag-search' placeholder='Search by tag'/>
       <hr/>
       <ul>
-          {searchByName.map(student=>{
+          {searchResults.map(student=>{
             return <li key={student.id} className="list-item">
                     <img src={student.pic} alt="student-pic"></img>
                     <div className='info-box'>
@@ -161,7 +192,7 @@ export default function Home() {
                                     </li>
                                 })}
                             </ul>
-                            <input onChange={HandleTag} onKeyPress={HandleKeyboardEvent} value={tag} type="text" placeholder='Add a tag' className='tag' id={student.id}/>
+                            <input onChange={HandleTag} onKeyPress={HandleKeyboardEvent} value={tag.id === student.id ? tag.tag : ""} type="text" placeholder='Add a tag' className='tag' id={student.id}/>
                             
                         </div>
                         
